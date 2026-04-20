@@ -10,17 +10,17 @@ A multi-service order platform on AWS. Nine services, one cluster. The applicati
 
 ## Services
 
-| Service | Description |
-|---------|-------------|
-| **api-gateway** | Auth, rate limiting, routes requests to internal services |
-| **order-service** | Order lifecycle and state machine |
-| **inventory-service** | Stock management and reservations |
-| **payment-service** | Payment processing, refunds, ledger |
-| **notification-service** | Email and SMS dispatch |
-| **shipping-service** | Shipments, tracking, carrier webhooks |
-| **worker** | SQS consumer, orchestrates cross-service events |
-| **scheduler** | Cron jobs (expired reservations, abandoned orders, retries) |
-| **dashboard-api** | Admin dashboard UI, analytics and reporting |
+| Service                  | Description                                                 |
+| ------------------------ | ----------------------------------------------------------- |
+| **api-gateway**          | Auth, rate limiting, routes requests to internal services   |
+| **order-service**        | Order lifecycle and state machine                           |
+| **inventory-service**    | Stock management and reservations                           |
+| **payment-service**      | Payment processing, refunds, ledger                         |
+| **notification-service** | Email and SMS dispatch                                      |
+| **shipping-service**     | Shipments, tracking, carrier webhooks                       |
+| **worker**               | SQS consumer, orchestrates cross-service events             |
+| **scheduler**            | Cron jobs (expired reservations, abandoned orders, retries) |
+| **dashboard-api**        | Admin dashboard UI, analytics and reporting                 |
 
 Read the source code. Environment variables, endpoints, and data models are in the code.
 
@@ -102,6 +102,7 @@ docker compose up --build
 This section is not required for submission but will set your project apart.
 
 It's 2am. Orders are failing. You're on call. You need to answer four questions fast:
+
 1. Which of the nine services is the problem?
 2. When did it start?
 3. What changed?
@@ -110,6 +111,7 @@ It's 2am. Orders are failing. You're on call. You need to answer four questions 
 If your setup can't answer those in under 10 minutes without SSH-ing into anything, it's not production-ready.
 
 What that looks like in practice:
+
 - A single place to see health of all nine services. Not nine separate places.
 - Alarms that mean something. Not "CPU is high" but "order creation rate dropped to zero" or "payment failure rate above 10%."
 - Logs you can search across services. "Show me every log line related to order #4271" - across all nine.
@@ -134,3 +136,5 @@ Bonus: a single order touches five services. Distributed tracing lets you follow
 **Tear down when done.** This stack costs money idle.
 
 Everything else is on you. Good luck.
+
+-- New commit
