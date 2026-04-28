@@ -1,0 +1,18 @@
+# jobs:
+#   build-push:
+#     on:
+#       push:
+#         branches:
+#           - main
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v3
+#       - name: Set up Go
+#         uses: actions/setup-go@v4
+#         with:
+#           go-version: 1.22.x
+#       - name: Build and push Docker images
+#         run: |
+#           docker build -t ${{ secrets.DOCKER_USERNAME }}/api-gateway:latest ./services/api-gateway
+#           docker build -t ${{ secrets.DOCKER_USERNAME }}/order-service:latest ./services/order-service
+#           docker build -t ${{ secrets.DOCKER_USERNAME }}/inventory-service:latest ./services/inventory-service

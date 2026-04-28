@@ -136,5 +136,3 @@ Bonus: a single order touches five services. Distributed tracing lets you follow
 **Tear down when done.** This stack costs money idle.
 
 Everything else is on you. Good luck.
-
--- New commit
