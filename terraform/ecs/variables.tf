@@ -59,3 +59,44 @@ variable "ecr_repositories" {
   description = "The list of ECR repositories"
   type        = list(string)
 }
+
+
+variable "alb_id" {
+  description = "The ID of the ALB to attach the ECS services to"
+  type        = string
+  
+}
+
+variable "vpc_id" {
+  description = "The ID of the VPC to create the ECS services in"
+  type        = string
+  
+}
+
+variable "alb_sg_id" {
+  description = "The ID of the Security Group for the ALB to allow traffic from the ECS services"
+  type        = string
+  
+}
+
+variable "private_subnet_ids" {
+  description = "The IDs of the subnets to create the ECS services in"
+  type        = list(string)
+  
+}
+
+variable "target_group_arn" {
+  description = "The ARN of the Target Group to attach the ECS services to"
+  type        = string
+  
+}
+
+variable "ecs_task_role" {
+  description = "The ARN of the IAM Role to use for the ECS Task"
+  type        = string
+}
+
+variable "ecs_execution_role" {
+  description = "The ARN of the IAM Role to use for the ECS Task Execution"
+  type        = string
+}

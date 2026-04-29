@@ -1,6 +1,9 @@
 locals {
   service_log_group_name = "${var.project_name}-${var.environment}-ecs-service-log-group"
+  service_name_sg = "${var.project_name}-${var.environment}-ecs-service-security-group"
 }
+
+#TODO: Reference IAM roles from the IAM module instead of creating new ones here
 
 # Create a CloudWatch log group for each service
 resource "aws_cloudwatch_log_group" "service_log_group" {
@@ -62,8 +65,8 @@ resource "aws_ecs_task_definition" "service_task_definition" {
   network_mode = "awsvpc"
   cpu = "1024"
   memory = "2048"
-  execution_role_arn = aws_iam_role.ecs_task_execution_role.arn
-  task_role_arn = aws_iam_role.ecs_task_role.arn
+  execution_role_arn = var.ecs_execution_role
+  task_role_arn = var.ecs_task_role
   tags = {
     Environment = var.environment
     Region = var.region
@@ -104,24 +107,24 @@ resource "aws_ecs_task_definition" "service_task_definition" {
 
 
 
-# Create ECS Service
-
+# Create ECS Service for each service
 
 resource "aws_ecs_service" "service" {
+  for_each = toset(var.service_names)
   name            = each.value.name
   cluster         = aws_ecs_cluster.main.id
   task_definition = aws_ecs_task_definition.service_task_definition[each.value.name].arn
   desired_count   = 1
-  iam_role        = aws_iam_role.ecs_task_role.arn
-  depends_on      = [aws_iam_role_policy_attachment.ecs_task_role_policy_attachment]
+  iam_role        = var.ecs_task_role
+  # depends_on      = [aws_iam_role_policy_attachment.ecs_task_role_policy_attachment]
 
-  ordered_placement_strategy {
-    type  = "binpack"
-    field = "cpu"
-  }
+  # ordered_placement_strategy {
+  #   type  = "binpack"
+  #   field = "cpu"
+  # }
 
   load_balancer {
-    target_group_arn = aws_lb_target_group.main.arn
+    target_group_arn = var.target_group_arn
     container_name   = each.value.name
     container_port   = 8080
   }
@@ -137,3 +140,23 @@ resource "aws_ecs_service" "service" {
 # Create the Security Group for the ECS Service
 
 
+resource "aws_security_group" "alb_sg" {
+    name        = local.service_name_sg
+    description = "Security group for the ALB"
+    vpc_id      = var.vpc_id
+    
+    ingress {
+        from_port   = 80
+        to_port     = 80
+        protocol    = "tcp"
+        security_groups = [var.alb_sg_id]
+        
+    }
+
+    egress {
+        from_port   = 0
+        to_port     = 0
+        protocol    = "-1"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+}

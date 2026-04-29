@@ -50,7 +50,8 @@ resource "aws_iam_role" "ecs_task_role" {
 }
 
 # Attach Policy that allows access to the Ecr
+#TODO: Replace with the correct policy arn that allows the ecs to pull images from the ECR repository
 resource "aws_iam_role_policy_attachment" "ecs_task_role_policy_attachment" {
   role = aws_iam_role.ecs_task_role.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
+  policy_arn = "arn:aws:iam::aws:policy/service-role/"
 }
