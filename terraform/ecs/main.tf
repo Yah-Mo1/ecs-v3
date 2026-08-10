@@ -67,11 +67,7 @@ resource "aws_ecs_task_definition" "service_task_definition" {
   memory = "2048"
   execution_role_arn = var.ecs_execution_role
   task_role_arn = var.ecs_task_role
-  tags = {
-    Environment = var.environment
-    Region = var.region
-    Project = var.project_name
-  }
+ 
   container_definitions = jsonencode([
     {
       name      = each.value.name
@@ -103,6 +99,12 @@ resource "aws_ecs_task_definition" "service_task_definition" {
   #   type       = "memberOf"
   #   expression = "attribute:ecs.availability-zone in [us-west-2a, us-west-2b]"
   # }
+
+   tags = {
+    Environment = var.environment
+    Region = var.region
+    Project = var.project_name
+  }
 }
 
 

@@ -118,8 +118,3 @@ services:
 
 volumes:
   pgdata:
-
-#TODO: Add secrets from AWS Secrets Manager here
-# secrets:
-#   my_secret:
-#     file: ./my_secret.txt

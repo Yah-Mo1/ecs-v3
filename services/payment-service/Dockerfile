@@ -12,5 +12,7 @@ COPY *.go ./
 
 RUN CGO_ENABLED=0 GOOS=linux go build -o /payment-service
 
+EXPOSE 8083
+
 # Run the binary when the container starts
 CMD ["/payment-service"]

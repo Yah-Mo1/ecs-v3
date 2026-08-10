@@ -12,5 +12,7 @@ COPY *.go ./
 
 RUN CGO_ENABLED=0 GOOS=linux go build -o /shipping-service
 
+EXPOSE 8085
+
 # Run the binary when the container starts
 CMD ["/shipping-service"]

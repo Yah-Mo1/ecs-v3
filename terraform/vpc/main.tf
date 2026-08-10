@@ -1,7 +1,13 @@
 # Terraform configuration for VPC
 
+# Get the available availability zones
+data "aws_availability_zones" "available" {
+  state = "available"
+}
+
 locals {
   project_name = var.project_name
+  availability_zones = length(data.aws_availability_zones.available.names)
 
   tags = {
     environment = var.environment
@@ -10,10 +16,6 @@ locals {
 
 }
 
-# Get the available availability zones
-data "aws_availability_zones" "available" {
-  state = "available"
-}
 
 # Create the VPC
 resource "aws_vpc" "main" {
@@ -26,8 +28,8 @@ resource "aws_vpc" "main" {
 # Create the public subnets
 resource "aws_subnet" "public" {
   vpc_id     = aws_vpc.main.id
-  count = data.aws_availability_zones.available.count
-  cidr_block = var.public_subnet_cidr_block
+  count = local.availability_zones
+  cidr_block = cidrsubnet(var.vpc_cidr_block, 8, count.index)
   tags = merge(local.tags, {
     Name = "${var.project_name}-public-subnet"
   })
@@ -36,8 +38,8 @@ resource "aws_subnet" "public" {
 # Create the private subnets
 resource "aws_subnet" "private" {
   vpc_id     = aws_vpc.main.id
-  count = data.aws_availability_zones.available.count
-  cidr_block = var.private_subnet_cidr_block
+  count = local.availability_zones
+  cidr_block = cidrsubnet(var.vpc_cidr_block, 8, count.index + length(data.aws_availability_zones.available))
   tags = merge(local.tags, {
     Name = "${var.project_name}-private-subnet"
   })
@@ -59,7 +61,7 @@ resource "aws_route_table" "public" {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.main.id
   }
-  count = data.aws_availability_zones.available.count
+  count = local.availability_zones
   tags = merge(local.tags, {
     Name = "${var.project_name}-public-route-table"
   })
@@ -69,7 +71,7 @@ resource "aws_route_table" "public" {
 resource "aws_route_table_association" "public" {
   subnet_id = aws_subnet.public[count.index].id
   route_table_id = aws_route_table.public[count.index].id
-  count = data.aws_availability_zones.available.count
+  count = local.availability_zones
 }
 
 
@@ -77,7 +79,7 @@ resource "aws_route_table_association" "public" {
 # Create the Elastic IP for the NAT gateways
 resource "aws_eip" "nat" {
   domain = "vpc"
-  count = data.aws_availability_zones.available.count
+  count = local.availability_zones
   tags = merge(local.tags, {
     Name = "${var.project_name}-nat-eip"
   })
@@ -86,7 +88,7 @@ resource "aws_eip" "nat" {
 # Create the NAT gateways -- For now we are using Nat gateways - later we will use vpc endpoints
 resource "aws_nat_gateway" "main" {
   subnet_id = aws_subnet.public[count.index].id
-  count = data.aws_availability_zones.available.count
+  count = local.availability_zones
   allocation_id = aws_eip.nat[count.index].id
   tags = merge(local.tags, {
     Name = "${var.project_name}-nat-gateway"
@@ -96,7 +98,7 @@ resource "aws_nat_gateway" "main" {
 # Create the private route tables
 resource "aws_route_table" "private" {
   vpc_id = aws_vpc.main.id
-  count = data.aws_availability_zones.available.count
+  count = local.availability_zones
   route {
     cidr_block = "0.0.0.0/0"
     nat_gateway_id = aws_nat_gateway.main[count.index].id
@@ -110,5 +112,5 @@ resource "aws_route_table" "private" {
 resource "aws_route_table_association" "private" {
   subnet_id = aws_subnet.private[count.index].id
   route_table_id = aws_route_table.private[count.index].id
-  count = data.aws_availability_zones.available.count
+  count = local.availability_zones
 }

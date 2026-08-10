@@ -14,5 +14,7 @@ COPY ./static ./static
 
 RUN CGO_ENABLED=0 GOOS=linux go build -o /dashboard-api
 
+EXPOSE 8086
+
 # Run the binary when the container starts
 CMD ["/dashboard-api"]

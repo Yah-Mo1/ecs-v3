@@ -12,5 +12,7 @@ COPY *.go ./
 
 RUN CGO_ENABLED=0 GOOS=linux go build -o /inventory-service
 
+EXPOSE 8082
+
 # Run the binary when the container starts
 CMD ["/inventory-service"]

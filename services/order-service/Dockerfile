@@ -12,5 +12,7 @@ COPY *.go ./
 
 RUN CGO_ENABLED=0 GOOS=linux go build -o /order-service
 
+EXPOSE 8081
+
 # Run the binary when the container starts
 CMD ["/order-service"]
