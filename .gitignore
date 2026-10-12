@@ -11,7 +11,7 @@
 .terraform/
 *.tfstate
 *.tfstate.backup
-*.tfvars
+# *.tfvars
 .terraform.lock.hcl
 
 # IDE
@@ -27,3 +27,6 @@ Thumbs.db
 # Environment
 .env
 .env.*
+
+# Floci
+data/

@@ -1,0 +1,16 @@
+services:
+  floci:
+    image: floci/floci:latest
+    ports:
+      - "4566:4566"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./data:/app/data
+    environment:
+      FLOCI_STORAGE_MODE: hybrid
+      FLOCI_DEFAULT_REGION: eu-west-2
+      # Floci drops to UID 1001. Docker Desktop's socket is root-owned,
+      # so the UI sidecar start fails with BindException: Permission denied.
+      FLOCI_RUN_AS_ROOT: "true"
+      # The console sidecar is started with us-east-1 unless this overrides it.
+      FLOCI_SERVICES_UI_EXTRA_ENV: AWS_REGION=eu-west-2,AWS_DEFAULT_REGION=eu-west-2
